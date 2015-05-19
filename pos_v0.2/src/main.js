@@ -1,4 +1,5 @@
 //TODO: Please write code in this file.
+//将
 function printInventory(inputs) {
     var cart_list = [];
     var allItems = loadAllItems();
