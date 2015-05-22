@@ -1,62 +1,38 @@
 
 function printInventory(inputs) {
-    var cart_list = [];
     var allItems = loadAllItems();
     var promotions = loadPromotions();
-    var NUM_1 = 10;
-    var NUM_2 = 11;
-
-    for(var i=0; i<inputs.length; i++) {
-        var temp = {};
-        var cartcode = inputs[i].substring(0,NUM_1);
-        var count = inputs[i].length > NUM_1 ? parseInt(inputs[i].substring(NUM_2)) : 1;
-
-        for(var j=0; j<allItems.length; j++) {
-            if(cartcode === allItems[j].barcode){
-                temp.name = allItems[j].name;
-                temp.unit = allItems[j].unit;
-                temp.price = allItems[j].price;
-                temp.count = count ;
-                temp.cartcode = cartcode;
-                cart_list.push(temp);
-            }
-        }
-    }
-
     var array = [];
 
-    for(var a=0; a<cart_list.length; a++) {
+    for(var i=0; i<inputs.length; i++) {
         var exist = false;
-        var name = cart_list[a].name;
-        var sum_count = cart_list[a].count;
-        var price = cart_list[a].price;
-        var unit = cart_list[a].unit;
-        var cartcode_1 = cart_list[a].cartcode;
 
-        for(var b=0; b<array.length; b++) {
-            if(array[b].name === name) {
-                array[b].count = array[b].count + sum_count;
-                array[b].price = cart_list[a].price;
-                array[b].unit = cart_list[a].unit;
-                array[b].cartcode = cart_list[a].cartcode;
-                array[b].sale_count = array[b].sale_count + sum_count;
-		        array[b].save_count = 0;
-                exist = true;
-            }
-        }
-        if(!exist) {
-            var temp_1 = {
-            name : name,
-            count : sum_count,
-            price : price,
-            unit : unit,
-            cartcode : cartcode_1,
-            sale_count : sum_count,
-	        save_count : 0
-            };
-            array.push(temp_1);
-        }
+            for(var j=0; j<array.length; j++) {
+                if(inputs[i] === array[j].barcode) {
+                    array[j].count ++;
+                    exist = true;
+                   }
+               }
+            if(!exist) {
+                   var newTemp = {
+                   barcode :inputs[i].split('-')[0],
+                   count : parseInt(inputs[i].split('-')[1]) || 1,
+   		              save_count : 0
+   			};
+                   array.push(newTemp);
+
+           }
     }
+    	for(var a=0; a<array.length; a++){
+   		for(var b=0; b<allItems.length; b++){
+   			if(array[a].barcode === allItems[b].barcode){
+   				array[a].name = allItems[b].name;
+   				array[a].unit = allItems[b].unit;
+   				array[a].price = allItems[b].price;
+   				array[a].sale_count = array[a].count;
+   			}
+   		}
+   	}
 
     var al = array.length;
     var pb = promotions[0].barcodes.length;
@@ -64,7 +40,7 @@ function printInventory(inputs) {
 
     for(var e=0; e<al; e++) {
         for(var f=0; f<pb; f++) {
-            if(array[e].cartcode === promotions[0].barcodes[f] && array[e].count >= NUM ) {
+            if(array[e].barcode === promotions[0].barcodes[f] && array[e].count >= NUM ) {
 		        array[e].save_count = parseInt(array[e].sale_count / NUM);
 		    }
 		}
@@ -91,8 +67,7 @@ function printInventory(inputs) {
                     '挥泪赠送商品：'+'\n';
     for(var c=0; c<al; c++) {
         for(var d=0; d<pb; d++) {
-            console.log(array[c].sale_count);
-            if(array[c].cartcode === promotions[0].barcodes[d]) {
+            if(array[c].barcode === promotions[0].barcodes[d]) {
                 array[c].sale_count = array[c].sale_count - parseInt(array[c].sale_count / NUM);
                 var send_count = (array[c].count - array[c].sale_count);
 
