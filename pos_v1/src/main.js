@@ -1,9 +1,4 @@
-
-function printInventory(inputs) {
-    var allItems = loadAllItems();
-    var promotions = loadPromotions();
-    var array = [];
-
+function eliminate_same_ele(array,inputs) {
     for(var i=0; i<inputs.length; i++) {
         var exist = false;
 
@@ -17,35 +12,55 @@ function printInventory(inputs) {
                    var newTemp = {
                    barcode :inputs[i].split('-')[0],
                    count : parseInt(inputs[i].split('-')[1]) || 1,
-   		              save_count : 0
-   			};
+                   save_count : 0
+                   };
                    array.push(newTemp);
-
-           }
+               }
     }
-    	for(var a=0; a<array.length; a++){
-   		for(var b=0; b<allItems.length; b++){
-   			if(array[a].barcode === allItems[b].barcode){
-   				array[a].name = allItems[b].name;
-   				array[a].unit = allItems[b].unit;
-   				array[a].price = allItems[b].price;
-   				array[a].sale_count = array[a].count;
-   			}
-   		}
-   	}
+    return array;
+}
 
-    var al = array.length;
+function array_add_attribute(array) {
+    var allItems = loadAllItems();
+
+    for(var a=0; a<array.length; a++){
+       for(var b=0; b<allItems.length; b++){
+           if(array[a].barcode === allItems[b].barcode){
+               array[a].name = allItems[b].name;
+               array[a].unit = allItems[b].unit;
+               array[a].price = allItems[b].price;
+               array[a].sale_count = array[a].count;
+           }
+       }
+   }
+   return array;
+}
+
+function array_add_save_count(array,NUM,promotions) {
     var pb = promotions[0].barcodes.length;
-    var NUM = 3;
+    var al = array.length;
 
     for(var e=0; e<al; e++) {
         for(var f=0; f<pb; f++) {
             if(array[e].barcode === promotions[0].barcodes[f] && array[e].count >= NUM ) {
-		        array[e].save_count = parseInt(array[e].sale_count / NUM);
-		    }
-		}
+                array[e].save_count = parseInt(array[e].sale_count / NUM);
+            }
+        }
     }
+    return array;
+}
 
+function printInventory(inputs) {
+    var promotions = loadPromotions();
+    var array = [];
+    var NUM = 3;
+    var pb = promotions[0].barcodes.length;
+
+    eliminate_same_ele(array,inputs);
+    array_add_attribute(array);
+    array_add_save_count(array,NUM,promotions);
+
+    var al = array.length;
     var total_note = "***<没钱赚商店>购物清单***" + '\n';
     var sum_price = 0;
     var save_money = 0;
@@ -80,6 +95,7 @@ function printInventory(inputs) {
 
 	total_note = total_note + '----------------------'+ '\n' +
 			        '总计：' + sum_price.toFixed(2) +'(元)' +'\n' +
-			        '节省：' + save_money.toFixed(2) +'(元)';
+			        '节省：' + save_money.toFixed(2) +'(元)\n' +
+                    '**********************';
     console.log(total_note);
 }
