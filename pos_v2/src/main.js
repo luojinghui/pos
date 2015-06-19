@@ -24,7 +24,7 @@ function printInventory(inputs) {
                     price : loadAllItem[i].price.toFixed(2),
                     count : barcode_count[key],
                     save_count : 0,
-                    subtotal : 0
+                    subtotal : 0,
                 })
             }
         }
@@ -38,69 +38,61 @@ function printInventory(inputs) {
                 var subtotal = 0;
 
                 array[i].save_count = parseInt(array[i].count / 3);
-                subtotal = (array[i].count - array[i].save_count) * array[i].price;
+                subtotal = ((array[i].count - array[i].save_count) * array[i].price).toFixed(2);
                 array[i].subtotal = subtotal;
-            } else {
-                array[i].subtotal = array[i].count * array[i].price;
+            } else if(array[i].barcode != promotion[0].barcodes[j] && array[i].count < 3) {
+                array[i].subtotal = (array[i].count * array[i].price).toFixed(2);
             }
         }
     }
-    console.log(array);
-    // _.each(array,function(val,i) {
-    //     _.mapValue(val,function(element,) {
-    //         return {count:barcode_count[ITEM000001]};
-    //     })
-    // });
-    // console.log(array);
-    // console.log(barcode_count);
-
-    // for(var key in barcode_count) {
-    //
-    // }
-    // for(var key in barcode_count) {
-    //     for (var i = 0; i < loadAllItem.length; i++) {
-    //         for(var j = 0; j < loadAllItem[i].length; j ++) {
-    //             if(key === loadAllItem[i][j]) {
-    //                 barcode_count[key].push(loadAllItem[i][j]);
-    //
-    //             }
-    //         }
-    //     }
-    // }
 
 
+    var currentDate = new Date(),
+        year = dateDigitToString(currentDate.getFullYear()),
+        month = dateDigitToString(currentDate.getMonth() + 1),
+        date = dateDigitToString(currentDate.getDate()),
+        hour = dateDigitToString(currentDate.getHours()),
+        minute = dateDigitToString(currentDate.getMinutes()),
+        second = dateDigitToString(currentDate.getSeconds()),
+        formattedDateString = year + '年' + month + '月' + date + '日 ' + hour + ':' + minute + ':' + second;
 
-    //console.log(expectText);
+    var result =
+        '***<没钱赚商店>购物清单***\n' +
+        '打印时间：' + formattedDateString + '\n' +
+        '----------------------\n' ;
+        for (var i = 0; i < array.length; i++) {
+            result += '名称：' + array[i].name +
+            '，数量：' + array[i].count + array[i].unit +
+            '，单价：' + array[i].price + '(元)' +
+            '，小计：' + array[i].subtotal + '(元)\n';
+        }
+        result += '----------------------\n' +
+        '挥泪赠送商品：\n' ;
+        for (var i = 0; i < array.length; i++) {
+            if(array[i].save_count >=1) {
+            result += '名称：' + array[i].name +
+            '，数量：' + array[i].save_count + array[i].unit + '\n';
+            }
+        }
+
+        result += '----------------------\n' ;
+        var total_price = 0;
+        var save_price = 0;
+
+        for (var i = 0; i < array.length; i++) {
+            total_price += Number(array[i].subtotal);
+            if(array[i].save_count >=1) {
+                save_price += array[i].save_count * array[i].price;
+            }
+        }
+        result += '总计：'+total_price.toFixed(2)+'(元)\n' +
+        '节省：'+save_price.toFixed(2)+'(元)\n' ;
+
+        result +='**********************';
+
+    console.log(result);
 }
 
-dateDigitToString = function (num) {
+function dateDigitToString(num) {
     return num < 10 ? '0' + num : num;
 };
-
-[
-    {
-    barcode: 'ITEM000001',
-    name: '雪碧',
-    unit: '瓶',
-    price: '3.00',
-    count: 5,
-    save_count: 0,
-    subtotal: 0
-    },
-    { barcode: 'ITEM000003',
-    name: '荔枝',
-    unit: '斤',
-    price: '15.00',
-    count: 2,
-    save_count: 0,
-    subtotal: 0
-    },
-    { barcode: 'ITEM000005',
-    name: '方便面',
-    unit: '袋',
-    price: '4.50',
-    count: 3,
-    save_count: 0,
-    subtotal: 0
-    }
-]
