@@ -15,7 +15,7 @@ cart_item.prototype.get_all_item = function () {
                     unit : this.loadAllItem[i].unit,
                     price : this.loadAllItem[i].price.toFixed(2),
                     count : this.barcode_count[key]
-                })
+                });
             }
         }
     }
