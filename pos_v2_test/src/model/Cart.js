@@ -20,7 +20,7 @@ Cart.prototype.total_price = function() {
     var total_price = 0;
 
     this.cart_items.forEach(function(val, i) {
-        total_price += val.subtotal();
+        total_price += Number(val.subtotal());
     })
     return total_price;
 }
@@ -29,7 +29,7 @@ Cart.prototype.save_price = function() {
     var save_price = 0;
 
     this.cart_items.forEach(function(val, i) {
-        save_price += val.save_price();
+        save_price += Number(val.save_price());
     })
     return save_price;
 }
