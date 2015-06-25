@@ -1,64 +1,47 @@
-function cart_item(barcode_count) {
-    this.loadAllItem = loadAllItems();
-    this.promotion = loadPromotions();
-    this.barcode_count = barcode_count;
+function CartItem(barcode,count) {
+    this.barcode = barcode;
+    this.count = count;
 }
-cart_item.prototype.get_all_item = function () {
-    var cart_item = [];
 
-    for(var key in this.barcode_count) {
-        for (var i = 0; i < this.loadAllItem.length; i++) {
-            if(key === this.loadAllItem[i].barcode) {
-                cart_item.push({
-                    barcode : this.loadAllItem[i].barcode,
-                    name : this.loadAllItem[i].name,
-                    unit : this.loadAllItem[i].unit,
-                    price : this.loadAllItem[i].price.toFixed(2),
-                    count : this.barcode_count[key]
-                });
-            }
+CartItem.prototype.all_item = function() {
+    var loadItem =  loadAllItems()
+    var index_load_item;
+    var barcode = this.barcode;
+
+    loadItem.forEach(function(val,i) {
+        if (val.barcode === barcode) {
+            index_load_item = loadItem[i];
         }
-    }
+    })
+    return index_load_item;
+}
 
+CartItem.prototype.promotion = function() {
+    var loadPromotion = loadPromotions();
+    var promotion_count = 0;
+    var num = this.count;
+    var barcode = this.barcode;
+
+    if(loadPromotion[0].type === 'BUY_TWO_GET_ONE_FREE'){
+        loadPromotion[0].barcodes.forEach(function(val,i) {
+            if(val === barcode) {
+                promotion_count = parseInt(num / 3);
+            }
+        })
+    }
+    return promotion_count;
+}
+
+CartItem.prototype.subtotal = function() {
     var subtotal = 0;
-    for (var i = 0; i < cart_item.length; i++) {
-        for (var j = 0; j < this.promotion[0].barcodes.length; j++) {
-            if(cart_item[i].barcode === this.promotion[0].barcodes[j]) {
-                cart_item[i].save_count = parseInt(cart_item[i].count / 3);
-                subtotal = ((cart_item[i].count - cart_item[i].save_count) * cart_item[i].price).toFixed(2);
-                cart_item[i].subtotal = subtotal;
-            } else if(cart_item[i].barcode != this.promotion[0].barcodes[j] && cart_item[i].count < 3) {
-                cart_item[i].subtotal = (cart_item[i].count * cart_item[i].price).toFixed(2);
-            }
-        }
-    }
 
-    return cart_item;
+    subtotal = (this.count - this.promotion()) * this.all_item().price;
+    return subtotal;
 }
 
+CartItem.prototype.save_price = function() {
+    var save_price = 0;
 
-// function cart_item(barcode_count) {
-//     this.loadAllItem loadAllItem();
-//     this.barcode_count = barcode_count;
-// }
-//
-// cart_item.prototype.get_all_item = function() {
-//     var array = [];
-//
-//     for(var key in this.barcode_count) {
-//         for (var i = 0; i < this.loadAllItem.length; i++) {
-//             if(key === this.loadAllItem[i].barcode) {
-//                 array.push({
-//                     barcode : this.loadAllItem[i].barcode,
-//                     name : this.loadAllItem[i].name,
-//                     unit : this.loadAllItem[i].unit,
-//                     price : this.loadAllItem[i].price.toFixed(2),
-//                     count : this.barcode_count[key],
-//                     save_count : 0,
-//                     subtotal : 0,
-//                 })
-//             }
-//         }
-//     }
-//     return array;
-// }
+    save_price = this.promotion() * this.all_item().price;
+    return save_price;
+}
